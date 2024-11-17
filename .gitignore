@@ -1,0 +1,4 @@
+mkosi.build/*
+mkosi.cache/*
+mkosi.output/*
+mkosi.skeleton.tar
