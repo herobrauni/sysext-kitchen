@@ -29,7 +29,7 @@ clean:
     mkosi=$(which mkosi)
     [[ -z $mkosi ]] && exit 1
 
-    $mkosi -f clean
+    $mkosi -f clean || :
     ${SUDOIF} $mkosi -f clean
     just clean-root
 
