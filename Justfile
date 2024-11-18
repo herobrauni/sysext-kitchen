@@ -35,9 +35,8 @@ clean:
 
 clean-root:
     #!/usr/bin/bash
-    pushd $(uv tool dir)/mkosi
+    cd $(uv tool dir)/mkosi
     find . -uid 0 -or -gid 0 | xargs -r $SUDOIF rm -vrf
-    popd
 
 prepare-sandbox:
     #!/usr/bin/bash
