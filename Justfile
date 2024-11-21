@@ -6,6 +6,8 @@ export SUDOIF := if `id -u` == "0" {""} else {"sudo"}
 default:
     just --list
 
+all: builddeps clean build
+
 builddeps:
     #!/usr/bin/bash
 
@@ -36,15 +38,10 @@ clean-root:
     cd $(uv tool dir)/mkosi
     find . -uid 0 -or -gid 0 | xargs -r $SUDOIF rm -vrf
 
-build +PACKAGES:
+build:
     #!/usr/bin/bash
     mkosi=$(which mkosi)
     [[ -z $mkosi ]] && exit 1
 
-    PACKAGES=$( printf '%s,' {{PACKAGES}} )
-    PACKAGES=${PACKAGES%%,}
-
-    for format in sysext confext; do
-        $SUDOIF $mkosi --format $format -f -p $PACKAGES
-    done
+    $SUDOIF $mkosi -f
     [[ -n $SUDOIF ]] && just clean-root
