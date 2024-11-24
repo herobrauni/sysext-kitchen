@@ -38,7 +38,7 @@ build $IMAGE_REF="ghcr.io/ublue-os/bazzite" $IMAGE_NAME="":
       echo >&2 "IMAGE_REF and IMAGE_REF must NOT be empty."
       exit 1
     }
-    just prepare-overlay-tar $IMAGE_REF
+    just prepare-overlay-tar $IMAGE_REF >&2
     for format in sysext confext; do
       {
       mkosi -f \
