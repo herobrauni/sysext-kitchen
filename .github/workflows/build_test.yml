@@ -19,8 +19,12 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: extensions
-          path: |
-            mkosi.output/10-example.sysext.raw
-            mkosi.output/10-example.confext.raw
+          name: 10-example.sysext.raw
+          path: mkosi.output/10-example.sysext.raw
+          retention-days: 1
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 10-example.confext.raw
+          path: mkosi.output/10-example.confext.raw
           retention-days: 1
