@@ -40,7 +40,7 @@ build $IMAGE_REF="ghcr.io/ublue-os/bazzite" $IMAGE_NAME="":
     just prepare-overlay-tar $IMAGE_REF >&2
     for format in sysext confext; do
       {
-      mkosi -f \
+      ${CI+sudo} $(which mkosi) -f \
         --format $format \
         --output $IMAGE_NAME.$format
       } >&2
