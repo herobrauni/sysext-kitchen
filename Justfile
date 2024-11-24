@@ -31,15 +31,21 @@ clean:
     ${SUDOIF} mkosi -f clean || :
     ${SUDOIF} rm -rf mkosi.{output,cache}/*
 
-build IMAGE_REF="ghcr.io/ublue-os/bazzite" IMAGE_NAME:
+build $IMAGE_REF="ghcr.io/ublue-os/bazzite" $IMAGE_NAME="":
     #!/usr/bin/bash
-    
     set -xeuo pipefail
-    just prepare-overlay-tar {{ IMAGE_REF }}
+    [[ -z $IMAGE_NAME || -z $IMAGE_REF ]] && {
+      echo >&2 "IMAGE_REF and IMAGE_REF must NOT be empty."
+      exit 1
+    }
+    just prepare-overlay-tar $IMAGE_REF
     for format in sysext confext; do
+      {
       mkosi -f \
         --format $format \
         --output $IMAGE_NAME.$format
+      } >&2
+      realpath $IMAGE_NAME.$format
     done
 
 prepare-overlay-tar $IMAGE_REF:
