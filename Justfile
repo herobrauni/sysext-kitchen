@@ -62,7 +62,7 @@ prepare-overlay-tar $IMAGE_REF:
     buildah run $container -- /usr/bin/bash --norc --noprofile <<-EOF 
       #!/usr/bin/bash
       set -xe
-      sudo touch -c /usr/lib/os-release
+      touch -c /usr/lib/os-release
       #### Here we make the changes we want to apply to our system extension ####
 
       dnf5 -y install hello 
