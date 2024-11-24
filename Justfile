@@ -27,8 +27,7 @@ builddeps:
 clean:
     #!/usr/bin/bash
 
-    mkosi -f clean || :
-    ${SUDOIF} mkosi -f clean || :
+    mkosi -f clean
     ${SUDOIF} rm -rf mkosi.{output,cache}/*
 
 build $IMAGE_REF="ghcr.io/ublue-os/bazzite" $IMAGE_NAME="":
