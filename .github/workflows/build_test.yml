@@ -16,3 +16,11 @@ jobs:
 
       - run: |
           just build ghcr.io/ublue-os/bazzite 10-example
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: extensions
+          path: |
+            mkosi.output/10-example.sysext.raw
+            mkosi.output/10-example.confext.raw
+          retention-days: 1
