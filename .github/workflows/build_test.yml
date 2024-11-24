@@ -13,4 +13,4 @@ jobs:
         uses: systemd/mkosi@v24.3
 
       - run: |
-          mkosi build
+          just build ghcr.io/ublue-os/bazzite 10-example

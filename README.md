@@ -1,9 +1,9 @@
 ## How to build
 
 ```sh
-just all
+just build IMAGE_REFERENCE EXTENSION_NAME
 ```
 
 ## How to add/remove packages
 
-Modify `Packages` at `mkosi.images/01-packages/mkosi.conf`
+Modify the recipe `prepare-overlay-tar` at `Justfile`.
