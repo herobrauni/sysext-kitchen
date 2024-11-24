@@ -11,6 +11,8 @@ jobs:
 
       - uses: extractions/setup-just@v2
 
+      - run: apt update -y && apt install -y systemd-repart
+
       - name: setup-mkosi
         uses: systemd/mkosi@v24.3
 
