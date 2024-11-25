@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+# TODO: Replace this with RemoveFiles= in the profiles
+rm -rf /sysroot/ostree /ostree
