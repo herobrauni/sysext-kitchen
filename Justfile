@@ -52,14 +52,24 @@ prepare-overlay-tar $IMAGE_REF:
 
     set -e ${DEBUG:+-x}
     : ${IMAGE_REF?ERROR: missing container image reference}
-    TAR_PATH=mkosi.basetree.tar
-    if [[ -e $TAR_PATH ]]; then
-        echo >&2 "${TAR_PATH} already exists. Skipping..."
+    BASETREE=mkosi.basetree
+
+    function mkdir_btrfs() {
+        if [[ $(stat -f --format="%T" $(dirname "$1")) == "btrfs" ]]; then
+            mkdir -p "$(dirname "$1")" && btrfs subvolume create "$1"
+        else
+            mkdir -p "$1"
+        fi
+    }
+
+    if [[ -e "$BASETREE" ]]; then
+        echo >&2 "${BASETREE} already exists. Skipping..."
         exit 0
     fi
 
-    echo >&2 "Preparing '$(basename $TAR_PATH)'..."
+    echo >&2 "Preparing '$(basename "$BASETREE")'..."
 
     container=$(podman create $IMAGE_REF)
     trap "podman rm $container" EXIT
-    podman cp ${container}:/ - > $TAR_PATH
+    mkdir_btrfs "$BASETREE"
+    podman cp ${container}:/ "$BASETREE"

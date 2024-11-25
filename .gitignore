@@ -3,4 +3,4 @@
 mkosi.key
 mkosi.crt
 mkosi.sandbox/*
-mkosi.basetree.tar
+mkosi.basetree/**
