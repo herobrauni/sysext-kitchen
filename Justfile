@@ -73,12 +73,12 @@ prepare-overlay-tar $IMAGE_REF:
 
     upperdir=$(podman inspect $image | jq -r '.[].GraphDriver.Data.UpperDir')
 
-    (cd $upperdir && tar -c . -f -) >$DESTDIR
+    (cd $upperdir && ${SUDOIF} tar -c --selinux -f - .) >$DESTDIR
 
     # Append selinux context
     if (( APPEND_SELINUX )); then
-      buildah run $container tar -C / -cf - etc/selinux > $TMP_SELINUX_TAR
-      tar -f $DESTDIR --concatenate $TMP_SELINUX_TAR
+      buildah run $container tar --selinux -C / -cf - etc/selinux > $TMP_SELINUX_TAR
+      tar --selinux --concatenate -f $DESTDIR $TMP_SELINUX_TAR
       rm $TMP_SELINUX_TAR
     fi
 
