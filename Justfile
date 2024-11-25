@@ -27,21 +27,21 @@ builddeps:
 clean:
     #!/usr/bin/bash
 
-    mkosi -f clean
+    mkosi clean
     ${SUDOIF} rm -rf mkosi.{output,cache}/*
 
 build $IMAGE_REF="ghcr.io/ublue-os/bazzite" $IMAGE_NAME="":
     #!/usr/bin/bash
-    set -xeuo pipefail
+    set ${DEBUG:+-x} -euo pipefail
     [[ -z $IMAGE_NAME || -z $IMAGE_REF ]] && {
-      echo >&2 "IMAGE_REF and IMAGE_REF must NOT be empty."
+      echo >&2 "IMAGE_REF and IMAGE_NAME must NOT be empty."
       exit 1
     }
     just prepare-overlay-tar $IMAGE_REF >&2
     for format in sysext confext; do
       {
-      ${CI+sudo} $(which mkosi) -f \
-        --format $format \
+      ${CI:+sudo} $(which mkosi) \
+        --profile $format \
         --output ${IMAGE_NAME}_${format}
       } >&2
       realpath ${IMAGE_NAME}_${format}
@@ -50,37 +50,16 @@ build $IMAGE_REF="ghcr.io/ublue-os/bazzite" $IMAGE_NAME="":
 prepare-overlay-tar $IMAGE_REF:
     #!/usr/bin/bash
 
-    set -xe
+    set -e ${DEBUG:+-x}
     : ${IMAGE_REF?ERROR: missing container image reference}
-    DESTDIR=mkosi.basetree.tar
-    APPEND_SELINUX=1
-    TMP_SELINUX_TAR=.tmp_selinux.tar
-
-    container=$(buildah from $IMAGE_REF)
-
-    buildah run $container -- /usr/bin/bash --norc --noprofile <<-EOF 
-      #!/usr/bin/bash
-      set -xe
-      touch -c /usr/lib/os-release
-      #### Here we make the changes we want to apply to our system extension ####
-
-      dnf5 -y install hello 
-      dnf5 -y clean all
-
-    EOF
-
-    image=$(buildah commit $container output)
-
-    upperdir=$(podman inspect $image | jq -r '.[].GraphDriver.Data.UpperDir')
-
-    (cd $upperdir && ${SUDOIF} tar -c --selinux -f - .) >$DESTDIR
-
-    # Append selinux context
-    if (( APPEND_SELINUX )); then
-      buildah run $container tar --selinux -C / -cf - etc/selinux > $TMP_SELINUX_TAR
-      tar --selinux --concatenate -f $DESTDIR $TMP_SELINUX_TAR
-      rm $TMP_SELINUX_TAR
+    TAR_PATH=mkosi.basetree.tar
+    if [[ -e $TAR_PATH ]]; then
+        echo >&2 "${TAR_PATH} already exists. Skipping..."
+        exit 0
     fi
 
-    buildah rm $container
-    podman rmi $image
+    echo >&2 "Preparing '$(basename $TAR_PATH)'..."
+
+    container=$(podman create $IMAGE_REF)
+    trap "podman rm $container" EXIT
+    podman cp ${container}:/ - > $TAR_PATH
