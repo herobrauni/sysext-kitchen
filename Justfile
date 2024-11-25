@@ -42,9 +42,9 @@ build $IMAGE_REF="ghcr.io/ublue-os/bazzite" $IMAGE_NAME="":
       {
       ${CI+sudo} $(which mkosi) -f \
         --format $format \
-        --output $IMAGE_NAME.$format
+        --output ${IMAGE_NAME}_${format}
       } >&2
-      realpath $IMAGE_NAME.$format
+      realpath ${IMAGE_NAME}_${format}
     done
 
 prepare-overlay-tar $IMAGE_REF:
