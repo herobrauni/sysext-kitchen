@@ -3,5 +3,5 @@
 if [[ $(stat -f --format="%T" mkosi.basetree) == "btrfs" ]]; then
     btrfs subvolume delete mkosi.basetree
 else
-    rm -r mkosi.basetree
+    rm -rf mkosi.basetree
 fi
