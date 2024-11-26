@@ -14,11 +14,11 @@ jobs:
           # Dowload btrfs-progs
           sudo apt-get install -y btrfs-progs
           # Create partition
-          sudo truncate -s $(findmnt --target . --bytes  --df --json | jq -r '.filesystems[0].avail * 0.8 | round') $BTRFS_FILE
-          mkfs.btrfs -r "$GITHUB_WORKSPACE" $BTRFS_FILE
+          sudo truncate -s $(findmnt --target . --bytes  --df --json | jq -r '.filesystems[0].avail * 0.8 | round') "$BTRFS_FILE"
+          sudo mkfs.btrfs -r "$GITHUB_WORKSPACE" "$BTRFS_FILE"
           pushd /
           # TODO: Add compression
-          systemd-mount $BTRFS_FILE $GITHUB_WORKSPACE
+          sudo systemd-mount "$BTRFS_FILE" "$GITHUB_WORKSPACE"
           popd
 
       - uses: actions/checkout@v4
