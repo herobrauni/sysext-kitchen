@@ -15,7 +15,7 @@ jobs:
         uses: systemd/mkosi@10fdbdf3d9db6c3d5e452f1f404d1c6438425c0b
 
       - run: |
-          just build ghcr.io/ublue-os/bazzite 10-example
+          DEBUG=1 just build ghcr.io/ublue-os/bazzite 10-example
 
       - uses: actions/upload-artifact@v4
         with:
