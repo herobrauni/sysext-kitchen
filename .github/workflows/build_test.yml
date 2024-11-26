@@ -14,6 +14,9 @@ jobs:
       - name: setup-mkosi
         uses: systemd/mkosi@10fdbdf3d9db6c3d5e452f1f404d1c6438425c0b
 
+      - name: Maximize build space
+        uses: ublue-os/remove-unwanted-software@v7
+
       - run: |
           DEBUG=1 just build ghcr.io/ublue-os/bazzite 10-example
 
