@@ -70,6 +70,6 @@ prepare-overlay-tar $IMAGE_REF:
     echo >&2 "Preparing '$(basename "$BASETREE")'..."
 
     container=$(podman create --entrypoint /usr/bin/true $IMAGE_REF)
-    trap "podman rm $container" EXIT
+    trap "podman rm $container $([[ -n $CI ]] && echo " && podman rmi $IMAGE_REF")" EXIT
     mkdir_btrfs "$BASETREE"
     podman cp ${container}:/ "$BASETREE"
