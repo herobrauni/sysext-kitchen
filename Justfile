@@ -42,7 +42,7 @@ build $IMAGE_REF="ghcr.io/ublue-os/bazzite" $IMAGE_NAME="":
       {
       ${CI:+sudo} $(which mkosi) \
         --profile $format \
-        --output ${IMAGE_NAME}_${format}
+        --output ${IMAGE_NAME}_${format} $([[ -n $CI ]] && echo --debug)
       } >&2
       realpath ${IMAGE_NAME}_${format}
     done
