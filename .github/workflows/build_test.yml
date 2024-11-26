@@ -17,8 +17,7 @@ jobs:
           sudo truncate -s $(findmnt --target . --bytes  --df --json | jq -r '.filesystems[0].avail * 0.8 | round') "$BTRFS_FILE"
           sudo mkfs.btrfs -r "$GITHUB_WORKSPACE" "$BTRFS_FILE"
           pushd /
-          # TODO: Add compression
-          sudo systemd-mount "$BTRFS_FILE" "$GITHUB_WORKSPACE"
+          sudo systemd-mount "$BTRFS_FILE" "$GITHUB_WORKSPACE" --options=compress-force=zstd:1
           popd
 
       - uses: actions/checkout@v4
