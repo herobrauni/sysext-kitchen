@@ -4,4 +4,4 @@ mkosi.key
 mkosi.crt
 mkosi.sandbox/*
 mkosi.basetree/**
-mkosi.local.*
+**/mkosi.local*
