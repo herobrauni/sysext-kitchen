@@ -1,6 +1,7 @@
 MKOSI_COMMIT := "5182007dcefd76c11bb2c5cd28013369c97121d4"
 MKOSI_SOURCE := "git+https://github.com/systemd/mkosi.git@" + MKOSI_COMMIT
 export SUDOIF := if `id -u` == "0" { "" } else { "sudo" }
+export BASETREE := justfile_directory() + "/mkosi.basetree"
 
 [private]
 default:
@@ -29,6 +30,13 @@ clean:
 
     mkosi clean
     ${SUDOIF} rm -rf mkosi.{output,cache}/*
+    if [[ -d $BASETREE ]]; then
+        if [[ $(stat -f --format="%T" $BASETREE) == "btrfs" ]]; then
+            sudo btrfs subvolume delete $BASETREE
+        else
+            sudo rm -rf $BASETREE
+        fi
+    fi
 
 build $IMAGE_REF="ghcr.io/ublue-os/bazzite" $IMAGE_NAME="":
     #!/usr/bin/bash
@@ -52,7 +60,6 @@ prepare-overlay-tar $IMAGE_REF:
 
     set -e ${DEBUG:+-x}
     : ${IMAGE_REF?ERROR: missing container image reference}
-    BASETREE=mkosi.basetree
 
     function mkdir_btrfs() {
         if [[ $(stat -f --format="%T" $(dirname "$1")) == "btrfs" ]]; then
