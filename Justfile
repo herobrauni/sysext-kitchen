@@ -52,7 +52,7 @@ build $IMAGE_REF="ghcr.io/ublue-os/bazzite" $IMAGE_NAME="":
         --profile $format \
         --output ${IMAGE_NAME}_${format} $([[ -n $CI ]] && echo --debug)
       } >&2
-      realpath ${IMAGE_NAME}_${format}
+      realpath ${IMAGE_NAME}_${format}.*
     done
 
 prepare-overlay-tar $IMAGE_REF:
