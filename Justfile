@@ -6,9 +6,9 @@ export SUDOIF := if `id -u` == "0" { "" } else { "sudo" }
 default:
     just --list
 
-all: builddeps clean build
+all: setup clean build
 
-builddeps:
+setup:
     #!/usr/bin/bash
 
     function commandq () {
