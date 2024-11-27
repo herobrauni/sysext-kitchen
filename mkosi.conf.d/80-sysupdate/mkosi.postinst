@@ -17,7 +17,7 @@ Path=${repo_url}/releases/download/%o-%W-%w/
 MatchPattern=$(Get '.Output')-@v-%a.raw
 "
 
-mkosi-chroot -- bash --norc --noprofile -c <<EOF
+mkosi-chroot -- bash -c <<EOF
 mkdir -p /usr/lib/sysupdate.d/
 tee <<<"$sysupd_content" > /usr/lib/sysupdate.d/$(Get '.Output').conf
 EOF
