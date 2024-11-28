@@ -60,7 +60,7 @@ jobs:
         run: |
           git config --global --add safe.directory "${PWD}"
 
-          cd ./artifacts
+          cd ./mkosi.output
 
           sha256sum *_sysext.raw > SHA256SUMS
 
