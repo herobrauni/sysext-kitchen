@@ -31,16 +31,16 @@ jobs:
         uses: ublue-os/remove-unwanted-software@v7
 
       - run: |
-          DEBUG=1 just build ghcr.io/ublue-os/bazzite 10-example
+          DEBUG=1 just build ghcr.io/ublue-os/aurora 20-vscode
 
       - uses: actions/upload-artifact@v4
         with:
-          name: 10-example_sysext.raw
-          path: mkosi.output/10-example_sysext.raw
+          name: 20-vscode_sysext.raw
+          path: mkosi.output/20-vscode_sysext.raw
           retention-days: 1
 
       - uses: actions/upload-artifact@v4
         with:
-          name: 10-example_confext.raw
-          path: mkosi.output/10-example_confext.raw
+          name: 20-vscode_confext.raw
+          path: mkosi.output/20-vscode_confext.raw
           retention-days: 1
