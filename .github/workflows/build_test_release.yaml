@@ -2,7 +2,8 @@ name: Build and release
 
 on:
   workflow_dispatch:
-
+env:
+    IMAGE_NAME: 20-vscode
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -31,19 +32,7 @@ jobs:
         uses: ublue-os/remove-unwanted-software@v7
 
       - run: |
-          DEBUG=1 just build ghcr.io/ublue-os/bazzite 10-example
-
-#       - uses: actions/upload-artifact@v4
-#         with:
-#           name: 10-example_sysext.raw
-#           path: mkosi.output/10-example_sysext.raw
-#           retention-days: 1
-# 
-#       - uses: actions/upload-artifact@v4
-#         with:
-#           name: 10-example_confext.raw
-#           path: mkosi.output/10-example_confext.raw
-#           retention-days: 1
+          DEBUG=1 just build ghcr.io/ublue-os/${{ env.IMAGE_NAME }}
 
       - name: Upload sysexts as artifacts
         if: github.event_name == 'pull_request'
