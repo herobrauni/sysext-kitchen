@@ -1,0 +1,95 @@
+name: Build sysext and confext
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Setup BTRFS partition
+        run: |
+          set -xe
+          BTRFS_FILE=/mybtrfs.img
+          # Dowload btrfs-progs
+          sudo apt-get install -y btrfs-progs
+          # Create partition
+          sudo truncate -s $(findmnt --target . --bytes  --df --json | jq -r '.filesystems[0].avail * 0.8 | round') "$BTRFS_FILE"
+          sudo mkfs.btrfs -r "$GITHUB_WORKSPACE" "$BTRFS_FILE"
+          pushd /
+          sudo systemd-mount "$BTRFS_FILE" "$GITHUB_WORKSPACE" --options=compress-force=zstd:1
+          popd
+
+      - uses: actions/checkout@v4
+
+      - uses: extractions/setup-just@v2
+
+      - name: setup-mkosi
+        uses: systemd/mkosi@10fdbdf3d9db6c3d5e452f1f404d1c6438425c0b
+
+      - name: Maximize build space
+        uses: ublue-os/remove-unwanted-software@v7
+
+      - run: |
+          DEBUG=1 just build ghcr.io/ublue-os/bazzite 10-example
+
+#       - uses: actions/upload-artifact@v4
+#         with:
+#           name: 10-example_sysext.raw
+#           path: mkosi.output/10-example_sysext.raw
+#           retention-days: 1
+# 
+#       - uses: actions/upload-artifact@v4
+#         with:
+#           name: 10-example_confext.raw
+#           path: mkosi.output/10-example_confext.raw
+#           retention-days: 1
+
+      - name: Upload sysexts as artifacts
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sysexts
+          path: mkosi.output/*sysext.raw
+          retention-days: 5
+          compression-level: 0
+          overwrite: true
+
+      - name: Upload confext as artifacts
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: confext
+          path: mkosi.output/*confext.raw
+          retention-days: 5
+          compression-level: 0
+          overwrite: true
+
+
+      - name: Create a release with a SHA256SUMS manifest and systemd-sysupdate configs
+        if: (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        run: |
+          git config --global --add safe.directory "${PWD}"
+
+          cd ./artifacts
+
+          sha256sum *_sysext.raw > SHA256SUMS
+
+          sysexts=()
+          for s in $(ls *_sysext.raw); do
+              s="${s%-*-x86-64.raw}"
+              sed "s/%%SYSEXT%%/${s}/g" ../templates/systemd-sysupdate.conf > ${s}.conf
+          done
+
+          gh release delete \
+            --cleanup-tag \
+            --yes \
+            "${SHORTNAME}-${RELEASE}" \
+            || true
+
+          # TODO: Handle --latest
+          gh release create \
+            --title "${NAME} sysexts" \
+            --notes "System extensions for ${NAME}" \
+            "${SHORTNAME}-${RELEASE}" \
+            ./*
