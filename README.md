@@ -56,12 +56,12 @@ If you want to enable it permanently:
 ```sh
 # If its a sysext
 sudo mkdir -p /var/lib/extensions
-sudo ln -s $PWD/mkosi.output/50-example_sysext.raw /var/lib/extensions
+sudo cp $PWD/mkosi.output/50-example_sysext.raw /var/lib/extensions
 sudo systemctl restart systemd-sysext
 
 # Otherwise, if its a confext
 sudo mkdir -p /var/lib/confexts
-sudo ln -s $PWD/mkosi.output/50-example_confext.raw /var/lib/extensions
+sudo cp $PWD/mkosi.output/50-example_confext.raw /var/lib/extensions
 sudo systemctl restart systemd-confext
 ```
 
