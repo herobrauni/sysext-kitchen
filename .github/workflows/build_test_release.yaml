@@ -1,4 +1,4 @@
-name: Build sysext and confext
+name: Build and release
 
 on:
   workflow_dispatch:
