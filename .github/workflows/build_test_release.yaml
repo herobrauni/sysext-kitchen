@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
 env:
     IMAGE_NAME: 20-vscode
+    IMAGE_REF: aurora
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -31,8 +32,12 @@ jobs:
       - name: Maximize build space
         uses: ublue-os/remove-unwanted-software@v7
 
-      - run: |
-          DEBUG=1 just build ghcr.io/ublue-os/$IMAGE_NAME
+
+      - name: just build
+        run: |
+          echo $IMAGE_REF
+          echo $IMAGE_NAME
+          DEBUG=1 just build ghcr.io/ublue-os/$IMAGE_REF $IMAGE_NAME
 
       - name: Upload sysexts as artifacts
         if: github.event_name == 'pull_request'
